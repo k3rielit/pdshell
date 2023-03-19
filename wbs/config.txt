@@ -1,0 +1,35 @@
+# Real:
+
+# C:\Program Files (x86)\IrfanView\i_view32.exe;.\execs\iview462_32bit_setup.exe;IrfanView 32bit
+# C:\Program Files\IrfanView\i_view64.exe;.\execs\iview462_64bit_setup.exe;IrfanView 64bit
+# C:\Program Files\SeaMonkey\seamonkey.exe;.\execs\seamonkey-2.53.3.hu.win64.installer.exe;SeaMonkey
+# C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\execs\Klavaro-2.00c-win.exe;Klavaro
+# C:\Program Files\Inkscape\bin\inkscape.exe;.\execs\inkscape-1.2.2.msi;Inkscape
+# C:\Program Files\Microsoft VS Code\Code.exe;.\execs\VSCodeUserSetup-x64-1.76.0.exe;Visual Studio Code
+# C:\Program Files\GIMP 2\bin\gimp-2.10.exe;.\execs\gimp-2.10.34-setup.exe;Gimp
+# C:\Program Files\JetBrains\PyCharm Community Edition 2022.2.2\bin\pycharm64.exe;.\execs\pycharm-community-2022.2.2.exe;PyCharm Community Edition 2022.2.2
+
+# Tests:
+
+AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\execs\testinstaller.bat
+CreateIcon;IrfanView 32bit;C:\Program Files (x86)\IrfanView\i_view32.exe
+Run;C:\Program Files (x86)\IrfanView\i_view32.exe
+
+AutoInstall;C:\Program Files\IrfanView\i_view64.exe;.\execs\testinstaller.bat
+CreateIcon;IrfanView 64bit;C:\Program Files\IrfanView\i_view64.exe
+RunAndWait;C:\Program Files\IrfanView\i_view64.exe
+
+AutoInstall;C:\Program Files\SeaMonkey\seamonkey.exe;.\execs\testinstaller.bat
+CreateIcon;SeaMonkey;C:\Program Files\SeaMonkey\seamonkey.exe
+
+AutoInstall;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\execs\testinstaller.bat
+CreateIcon;Klavaro;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe
+
+AutoInstall;C:\Program Files\Inkscape\bin\inkscape.exe;.\execs\testinstaller.bat
+CreateIcon;Inkscape;C:\Program Files\Inkscape\bin\inkscape.exe
+
+AutoInstall;C:\Program Files\Microsoft VS Code\Code.exe;.\execs\testinstaller.bat
+CreateIcon;Visual Studio Code;C:\Program Files\Microsoft VS Code\Code.exe
+
+AutoInstall;C:\Program Files\GIMP 2\bin\gimp-2.10.exe;.\execs\testinstaller.bat
+CreateIcon;Gimp;C:\Program Files\GIMP 2\bin\gimp-2.10.exe
