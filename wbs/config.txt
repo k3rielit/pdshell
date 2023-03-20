@@ -11,13 +11,15 @@
 
 # Tests:
 
+RunAndWait;.\installers\testinstaller.bat
+
 AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\execs\testinstaller.bat
 CreateIcon;IrfanView 32bit;C:\Program Files (x86)\IrfanView\i_view32.exe
 Run;C:\Program Files (x86)\IrfanView\i_view32.exe
 
 AutoInstall;C:\Program Files\IrfanView\i_view64.exe;.\execs\testinstaller.bat
 CreateIcon;IrfanView 64bit;C:\Program Files\IrfanView\i_view64.exe
-RunAndWait;C:\Program Files\IrfanView\i_view64.exe
+Run;C:\Program Files\IrfanView\i_view64.exe
 
 AutoInstall;C:\Program Files\SeaMonkey\seamonkey.exe;.\execs\testinstaller.bat
 CreateIcon;SeaMonkey;C:\Program Files\SeaMonkey\seamonkey.exe

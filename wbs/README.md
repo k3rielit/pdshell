@@ -35,8 +35,12 @@ RunAndWait;path\program.exe # Run the executable, WaitOnReturn = True
 
 Double clicking `wbs.vbs` runs it via `wscript`, where outputs are using message boxes (Windows application). Run it via `cscript` instead to have a CLI (console application). ( [Source](https://stackoverflow.com/a/9062764), [Source](http://scripts.dragon-it.co.uk/scripts.nsf/MainFrame?OpenFrameSet&Frame=East&Src=%2Fscripts.nsf%2Fdocs%2Fvbscript-writing-to-stdout-stderr!OpenDocument%26AutoFramed) )
 
-The script requires administrator privileges, or else it'll exit. But CMD or PowerShell windows started as admin always has System32 as their working directory. The `cli.bat` solves this issue. ( [Source](https://stackoverflow.com/a/30256894) )
+The script requires administrator privileges, or else it'll exit. But CMD or PowerShell windows started as admin always has System32 as their working directory. The `cli.bat` solves this issue. ( [Source](https://stackoverflow.com/a/30256894) ) But it won't work if ran from a network path (like `\\192.168.0.200\path\`), because CMD doesn't support UNC paths as current directories.
 
 To check whether the script was run as an administrator, trying to access a protected registry key is the simplest way. ( [Source](https://stackoverflow.com/a/45069476) )
 
 ## TODO
+
+* Workaround for CMD not supporting UNC paths (cli.bat) ( [Source](https://superuser.com/questions/282963/browse-an-unc-path-using-windows-cmd-without-mapping-it-to-a-network-drive) )
+* Run and RunAndWait argument support ( [Source](https://stackoverflow.com/a/56288141) )
+* AutoInstall, CreateIcon, ... , implementation

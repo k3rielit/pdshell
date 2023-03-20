@@ -30,6 +30,7 @@ If objFSO.FileExists(strFilePath) Then
         ' Check if the line is not empty and does not start with #
         If Len(strLine) > 0 And Left(strLine, 1) <> "#" Then
             arrSplitLine = Split(strLine, ";")
+            WScript.Echo "-----------------------< " & arrSplitLine(0) & " >-----------------------"
 
             ' Switch command type
             Select Case arrSplitLine(0)
@@ -37,7 +38,7 @@ If objFSO.FileExists(strFilePath) Then
                     Call WBS_Run(arrSplitLine,False)
 
                 Case "RunAndWait"
-                    Call WBS_Run(arrSplitLine,False)
+                    Call WBS_Run(arrSplitLine,True)
 
                 Case "AutoInstall"
                     WScript.Echo "[WBS] AutoInstall: " & strLine
@@ -63,26 +64,39 @@ End If
 Private Function IsAdmin()
     On Error Resume Next
     objShell.RegRead("HKEY_USERS\S-1-5-19\Environment\TEMP")
-    if Err.number = 0 Then 
+    If Err.number = 0 Then 
         IsAdmin = True
-    else
+    Else
         IsAdmin = False
-    end if
+    End If
     Err.Clear
     On Error goto 0
 End Function
 
-' Run an executable if it exists
-Function WBS_Run(arrParams, boolWaitOnReturn)
-    Dim intReturnCode, absolutePath
+' Function for converting relative to absolute paths
+Private Function Pathfinder(strPath)
     On Error Resume Next
-    If(UBound(arrParams)>=1 And Len(arrParams(1)) > 0) Then
-        If(arrParams(1)) Then
+    Dim strAbsolutePath
+    If Not objFSO.DriveExists(objFSO.GetDriveName(strPath)) Then
+        strAbsolutePath = objFSO.GetAbsolutePathName(strPath)
+        WScript.Echo "[Pathfinder] Relative: " & strPath & " > Absolute: " & strAbsolutePath
+    Else
+        strAbsolutePath = strPath
+    End If
+    Pathfinder = strAbsolutePath
+End Function
 
+' Run an executable if it exists
+Private Function WBS_Run(arrParams, boolWaitOnReturn)
+    On Error Resume Next
+    Dim intReturnCode, strAbsolutePath
+    If UBound(arrParams)>=1 And Len(arrParams(1)) > 0 Then
+        strAbsolutePath = Pathfinder(arrParams(1))
+        If objFSO.FileExists(strAbsolutePath) Then
+            WScript.Echo "[Run] " & strAbsolutePath
+            objShell.Run chr(34) & strAbsolutePath & chr(34), 1, boolWaitOnReturn
+        Else
+            WScript.Echo "[Run] Path not found."
         End If
-        WScript.Echo "[Run] " & arrParams(0)
-        ' Run the executable and wait for it to finish
-        WBS_Run = objShell.Run(strExecutablePath, 1, boolWaitOnReturn)
-        WScript.Echo "[Run] Return code: " & intReturnCode
     End If
 End Function
