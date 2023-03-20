@@ -41,7 +41,7 @@ If objFSO.FileExists(strFilePath) Then
                     Call WBS_Run(arrSplitLine,True)
 
                 Case "AutoInstall"
-                    WScript.Echo "[WBS] AutoInstall: " & strLine
+                    Call WBS_AutoInstall(arrSplitLine)
 
                 Case "CreateIcon"
                     WScript.Echo "[WBS] CreateIcon: " & strLine
@@ -89,14 +89,30 @@ End Function
 ' Run an executable if it exists
 Private Function WBS_Run(arrParams, boolWaitOnReturn)
     On Error Resume Next
-    Dim intReturnCode, strAbsolutePath
+    Dim strAbsolutePath
     If UBound(arrParams)>=1 And Len(arrParams(1)) > 0 Then
         strAbsolutePath = Pathfinder(arrParams(1))
         If objFSO.FileExists(strAbsolutePath) Then
-            WScript.Echo "[Run] " & strAbsolutePath
+            WScript.Echo "[Run] Running: " & strAbsolutePath
             objShell.Run chr(34) & strAbsolutePath & chr(34), 1, boolWaitOnReturn
         Else
-            WScript.Echo "[Run] Path not found."
+            WScript.Echo "[Run] Path not found: " & strAbsolutePath
+        End If
+    End If
+End Function
+
+' Checks whether the file exists, if not, runs the installer
+Private Function WBS_AutoInstall(arrParams)
+    On Error Resume Next
+    Dim strAbsolutePathFile, strAbsolutePathInstaller
+    If UBound(arrParams)>=2 And Len(arrParams(1)) > 0 Then
+        strAbsolutePathFile = Pathfinder(arrParams(1))
+        strAbsolutePathInstaller = Pathfinder(arrParams(2))
+        If Not objFSO.FileExists(strAbsolutePathFile) Then
+            WScript.Echo "[Install] Installing: " & strAbsolutePathInstaller
+            objShell.Run chr(34) & strAbsolutePathInstaller & chr(34), 1, True
+        Else
+            WScript.Echo "[Install] Already installed: " & strAbsolutePathFile
         End If
     End If
 End Function

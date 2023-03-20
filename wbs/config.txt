@@ -12,26 +12,27 @@
 # Tests:
 
 RunAndWait;.\installers\testinstaller.bat
+RunAndWait;.\wrong\path\nonexisting.exe
 
-AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\execs\testinstaller.bat
+AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\installers\testinstaller.bat
 CreateIcon;IrfanView 32bit;C:\Program Files (x86)\IrfanView\i_view32.exe
 Run;C:\Program Files (x86)\IrfanView\i_view32.exe
 
-AutoInstall;C:\Program Files\IrfanView\i_view64.exe;.\execs\testinstaller.bat
+AutoInstall;C:\Program Files\IrfanView\i_view64.exe;.\installers\testinstaller.bat
 CreateIcon;IrfanView 64bit;C:\Program Files\IrfanView\i_view64.exe
 Run;C:\Program Files\IrfanView\i_view64.exe
 
-AutoInstall;C:\Program Files\SeaMonkey\seamonkey.exe;.\execs\testinstaller.bat
+AutoInstall;C:\Program Files\SeaMonkey\seamonkey.exe;.\installers\testinstaller.bat
 CreateIcon;SeaMonkey;C:\Program Files\SeaMonkey\seamonkey.exe
 
-AutoInstall;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\execs\testinstaller.bat
+AutoInstall;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\installers\testinstaller.bat
 CreateIcon;Klavaro;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe
 
-AutoInstall;C:\Program Files\Inkscape\bin\inkscape.exe;.\execs\testinstaller.bat
+AutoInstall;C:\Program Files\Inkscape\bin\inkscape.exe;.\installers\testinstaller.bat
 CreateIcon;Inkscape;C:\Program Files\Inkscape\bin\inkscape.exe
 
-AutoInstall;C:\Program Files\Microsoft VS Code\Code.exe;.\execs\testinstaller.bat
+AutoInstall;C:\Program Files\Microsoft VS Code\Code.exe;.\installers\testinstaller.bat
 CreateIcon;Visual Studio Code;C:\Program Files\Microsoft VS Code\Code.exe
 
-AutoInstall;C:\Program Files\GIMP 2\bin\gimp-2.10.exe;.\execs\testinstaller.bat
+AutoInstall;C:\Program Files\GIMP 2\bin\gimp-2.10.exe;.\installers\testinstaller.bat
 CreateIcon;Gimp;C:\Program Files\GIMP 2\bin\gimp-2.10.exe
