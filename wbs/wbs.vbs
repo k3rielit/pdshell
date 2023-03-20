@@ -43,8 +43,12 @@ If objFSO.FileExists(strFilePath) Then
                 Case "AutoInstall"
                     Call WBS_AutoInstall(arrSplitLine)
 
+                Case "CreateShortcut"
+                    Call WBS_CreateShortcut(arrSplitLine)
                 Case "CreateIcon"
-                    WScript.Echo "[WBS] CreateIcon: " & strLine
+                    Call WBS_CreateShortcut(arrSplitLine)
+                Case "CreateLink"
+                    Call WBS_CreateShortcut(arrSplitLine)
 
                 Case Else
                     WScript.Echo "[WBS] Unknown command: " & strLine
@@ -86,7 +90,20 @@ Private Function Pathfinder(strPath)
     Pathfinder = strAbsolutePath
 End Function
 
+' Function for creating a directory for a given relative/absolute file path 
+Private Sub AutoCreateDirectory(strPath)
+    On Error Resume Next
+    Dim strDirectoryPath, strAbsolutePath
+    strAbsolutePath = Pathfinder(strPath)
+    strDirectoryPath = objFSO.GetParentFolderName(strAbsolutePath)
+    If Not objFSO.FolderExists(strDirectoryPath) Then
+        objFSO.CreateFolder(strDirectoryPath)
+    End If
+End Sub
+
 ' Run an executable if it exists
+' Run;ExecutablePath
+' RunAndWait;ExecutablePath
 Private Function WBS_Run(arrParams, boolWaitOnReturn)
     On Error Resume Next
     Dim strAbsolutePath
@@ -102,10 +119,11 @@ Private Function WBS_Run(arrParams, boolWaitOnReturn)
 End Function
 
 ' Checks whether the file exists, if not, runs the installer
+' AutoInstall;FilePath;InstallerPath
 Private Function WBS_AutoInstall(arrParams)
     On Error Resume Next
     Dim strAbsolutePathFile, strAbsolutePathInstaller
-    If UBound(arrParams)>=2 And Len(arrParams(1)) > 0 Then
+    If UBound(arrParams)>=2 And Len(arrParams(1)) > 0 And Len(arrParams(2)) > 0 Then
         strAbsolutePathFile = Pathfinder(arrParams(1))
         strAbsolutePathInstaller = Pathfinder(arrParams(2))
         If Not objFSO.FileExists(strAbsolutePathFile) Then
@@ -114,5 +132,29 @@ Private Function WBS_AutoInstall(arrParams)
         Else
             WScript.Echo "[Install] Already installed: " & strAbsolutePathFile
         End If
+    End If
+End Function
+
+' Creates a shortcut / shell link (.lnk)
+' CreateShortcut;ShortcutPath;TargetPath
+' CreateIcon;ShortcutPath;TargetPath
+' CreateLink;ShortcutPath;TargetPath
+Private Function WBS_CreateShortcut(arrParams)
+    On Error Resume Next
+    Dim objShortcut, strShortcutPath, strTargetPath, strWorkingDirectoryPath
+    If UBound(arrParams)>=2 And Len(arrParams(1)) > 0 And Len(arrParams(2)) > 0 Then
+        strShortcutPath = Pathfinder(arrParams(1))
+        strTargetPath = Pathfinder(arrParams(2))
+        ' CreateShortcut() doesn't create the directory automatically
+        strWorkingDirectoryPath = objFSO.GetParentFolderName(strTargetPath)
+        AutoCreateDirectory strShortcutPath
+        ' Create shortcut
+        Set objShortcut = objShell.CreateShortcut(strShortcutPath)
+        objShortcut.TargetPath = strTargetPath
+        objShortcut.WorkingDirectory = strWorkingDirectoryPath
+        objShortcut.WindowStyle = 1 ' 1 = Normal window
+        objShortcut.IconLocation = strTargetPath & ",0"
+        objShortcut.Save
+        WScript.Echo "[CreateShortcut] Created successfully: " & strShortcutPath 
     End If
 End Function

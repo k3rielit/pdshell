@@ -27,8 +27,12 @@ CommandType;param1;param2;param3
 ```
 
 ```ps
-Run;path\program.exe # Run the executable, WaitOnReturn = False
-RunAndWait;path\program.exe # Run the executable, WaitOnReturn = True
+Run;path\program.exe         # Run the executable, WaitOnReturn = False
+RunAndWait;path\program.exe  # Run the executable, WaitOnReturn = True
+AutoInstall;path\to\file;path\to\installer.exe  # If the file doesn't exist, runs the installer
+CreateShortcut;shortcut\path\Shortcut.lnk;target\file.txt   # Creates a shortcut
+CreateIcon;icon\path\Icon.lnk;target\directory\             # Creates a shortcut
+CreateLink;icon\path\Icon.lnk;target\executable\program.exe # Creates a shortcut
 ```
 
 ## NOTES
@@ -39,8 +43,13 @@ The script requires administrator privileges, or else it'll exit. But CMD or Pow
 
 To check whether the script was run as an administrator, trying to access a protected registry key is the simplest way. ( [Source](https://stackoverflow.com/a/45069476) )
 
+Paths can be:
+ * Relative: `.\relative\path\`
+ * Absolute: `C:\absolute\path\`, `\\192.168.0.200\network\path\`
+
+The `CreateShortcut`/`CreateIcon`/`CreateLink` commands work for executables, regular files, and directories as well. They're' just synonyms for the same command.
+
 ## TODO
 
 * Workaround for CMD not supporting UNC paths (cli.bat) ( [Source](https://superuser.com/questions/282963/browse-an-unc-path-using-windows-cmd-without-mapping-it-to-a-network-drive) )
 * Run and RunAndWait argument support ( [Source](https://stackoverflow.com/a/56288141) )
-* AutoInstall, CreateIcon, ... , implementation
