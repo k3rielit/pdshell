@@ -17,7 +17,7 @@ End If
 strScriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
 strFilePath = strScriptDir & "\config.txt"
 
-WScript.Echo "WBS v0.2"
+WScript.Echo "WBS v0.3"
 WScript.Echo "[WBS] Directory: " & strScriptDir
 WScript.Echo "[WBS] Config: " & strFilePath
 
@@ -50,6 +50,9 @@ If objFSO.FileExists(strFilePath) Then
                     Call WBS_CreateShortcut(arrSplitLine)
                 Case "CreateLink"
                     Call WBS_CreateShortcut(arrSplitLine)
+
+                Case "ExecuteSql"
+                    Call WBS_ExecuteSql(arrSplitLine)
 
                 Case Else
                     WScript.Echo "[WBS] Unknown command: " & strLine
@@ -89,6 +92,7 @@ Private Function Pathfinder(strPath)
         strAbsolutePath = strPath
     End If
     Pathfinder = strAbsolutePath
+    On Error goto 0
 End Function
 
 ' Function for creating a directory for a given relative/absolute file path 
@@ -100,6 +104,7 @@ Private Sub AutoCreateDirectory(strPath)
     If Not objFSO.FolderExists(strDirectoryPath) Then
         objFSO.CreateFolder(strDirectoryPath)
     End If
+    On Error goto 0
 End Sub
 
 ' Run an executable if it exists
@@ -126,6 +131,7 @@ Private Function WBS_Run(arrParams, boolWaitOnReturn)
             WScript.Echo "[Run] Path not found: " & strAbsolutePath
         End If
     End If
+    On Error goto 0
 End Function
 
 ' Checks whether the file exists, if not, runs the installer
@@ -143,6 +149,7 @@ Private Function WBS_AutoInstall(arrParams)
             WScript.Echo "[Install] Already installed: " & strAbsolutePathFile
         End If
     End If
+    On Error goto 0
 End Function
 
 ' Creates a shortcut / shell link (.lnk)
@@ -167,5 +174,35 @@ Private Function WBS_CreateShortcut(arrParams)
         objShortcut.Save
         WScript.Echo "[CreateShortcut] Created successfully: " & strShortcutPath 
     End If
+    On Error goto 0
 End Function
 
+' Executes a SQL command with the connection string
+' Depends on ODBC Connector: https://dev.mysql.com/downloads/connector/odbc/
+' ExecuteSql;driver;server,database,uid,pwd;SQL
+Private Sub WBS_ExecuteSql(arrParams)
+    On Error Resume Next
+    Dim objConnection, objCommand
+    If UBound(arrParams)>=5 Then
+        ' Create a connection to the MySQL server
+        Set objConnection = CreateObject("ADODB.Connection")
+        objConnection.ConnectionString = "Driver=" & arrParams(1) & ";Server=" & arrParams(2) & ";Database=" & arrParams(3) & ";User=" & arrParams(4) & ";Password=" & arrParams(5) & ";"
+        objConnection.Open
+        WScript.Echo "[ExecuteSql] Connection state: " & objConnection.State
+        ' Create a command object to execute the SQL statement
+        Set objCommand = CreateObject("ADODB.Command")
+        objCommand.ActiveConnection = objConnection
+        objCommand.CommandText = arrParams(6) & ";"
+        ' Execute the SQL statement
+        WScript.Echo "[ExecuteSql] Executing: " & arrParams(6) & ";"
+        objCommand.Execute
+        If Err.Number <> 0 Then
+            WScript.Echo "[ExecuteSql] Error: " & Err.Description
+        End If
+        ' Close the connection
+        objConnection.Close
+        Set objConnection = Nothing
+        Set objCommand = Nothing
+    End If
+    On Error goto 0
+End Sub

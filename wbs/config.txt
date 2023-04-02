@@ -1,19 +1,8 @@
-# Real:
-
-# C:\Program Files (x86)\IrfanView\i_view32.exe;.\execs\iview462_32bit_setup.exe;IrfanView 32bit
-# C:\Program Files\IrfanView\i_view64.exe;.\execs\iview462_64bit_setup.exe;IrfanView 64bit
-# C:\Program Files\SeaMonkey\seamonkey.exe;.\execs\seamonkey-2.53.3.hu.win64.installer.exe;SeaMonkey
-# C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\execs\Klavaro-2.00c-win.exe;Klavaro
-# C:\Program Files\Inkscape\bin\inkscape.exe;.\execs\inkscape-1.2.2.msi;Inkscape
-# C:\Program Files\Microsoft VS Code\Code.exe;.\execs\VSCodeUserSetup-x64-1.76.0.exe;Visual Studio Code
-# C:\Program Files\GIMP 2\bin\gimp-2.10.exe;.\execs\gimp-2.10.34-setup.exe;Gimp
-# C:\Program Files\JetBrains\PyCharm Community Edition 2022.2.2\bin\pycharm64.exe;.\execs\pycharm-community-2022.2.2.exe;PyCharm Community Edition 2022.2.2
-
 # Tests:
 
-RunAndWait;.\installers\testinstaller.bat
-RunAndWait;.\wrong\path\nonexisting.exe
-Run;C:\Windows\System32\notepad.exe;C:\Windows\System32\slmgr.vbs
+# RunAndWait;.\installers\testinstaller.bat
+# RunAndWait;.\wrong\path\nonexisting.exe
+# Run;C:\Windows\System32\notepad.exe;C:\Windows\System32\slmgr.vbs
 # 
 # AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\installers\testinstaller.bat
 # CreateIcon;.\icons\IrfanView 32bit.lnk;C:\Program Files (x86)\IrfanView\i_view32.exe
@@ -41,3 +30,6 @@ Run;C:\Windows\System32\notepad.exe;C:\Windows\System32\slmgr.vbs
 # CreateIcon;.\icons\Config.lnk;.\config.txt
 # CreateIcon;.\icons\WBSDir.lnk;.\
 # CreateIcon;.\icons\Public Directory.lnk;C:\Users\Public\Desktop\
+
+# ExecuteSql;{MySQL ODBC 8.0 Unicode Driver};localhost;mysql;root;1234;DROP DATABASE vizsga
+# ExecuteSql;{MySQL ODBC 8.0 Unicode Driver};localhost;mysql;root;1234;CREATE DATABASE vizsga

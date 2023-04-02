@@ -35,6 +35,7 @@ AutoInstall;path\to\file;path\to\installer.exe  # If the file doesn't exist, run
 CreateShortcut;shortcut\path\Shortcut.lnk;target\file.txt   # Creates a shortcut
 CreateIcon;icon\path\Icon.lnk;target\directory\             # Creates a shortcut
 CreateLink;icon\path\Icon.lnk;target\executable\program.exe # Creates a shortcut
+ExecuteSql;driver;server,database,uid,pwd;SQL               # Executes SQL
 ```
 
 ## NOTES
@@ -51,6 +52,8 @@ Paths can be:
 * Absolute: `C:\absolute\path\`, `\\192.168.0.200\network\path\`
 
 The `CreateShortcut`/`CreateIcon`/`CreateLink` commands work for executables, regular files, and directories as well. They're' just synonyms for the same command.
+
+The `ExecuteSql` command depends on the ODBC Connector ( [Download](https://dev.mysql.com/downloads/connector/odbc/) ). It needs the driver to be specified, it'll be `{MySQL ODBC 8.0 Unicode Driver}` for MySQL 8.0 for example.
 
 ## TODO
 
