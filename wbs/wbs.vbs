@@ -17,6 +17,7 @@ End If
 strScriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
 strFilePath = strScriptDir & "\config.txt"
 
+WScript.Echo "WBS v0.2"
 WScript.Echo "[WBS] Directory: " & strScriptDir
 WScript.Echo "[WBS] Config: " & strFilePath
 
@@ -103,15 +104,24 @@ End Sub
 
 ' Run an executable if it exists
 ' Run;ExecutablePath
+' Run;ExecutablePath;Arguments
 ' RunAndWait;ExecutablePath
+' RunAndWait;ExecutablePath;Arguments
 Private Function WBS_Run(arrParams, boolWaitOnReturn)
     On Error Resume Next
-    Dim strAbsolutePath
+    Dim strAbsolutePath, strRunParam
     If UBound(arrParams)>=1 And Len(arrParams(1)) > 0 Then
         strAbsolutePath = Pathfinder(arrParams(1))
         If objFSO.FileExists(strAbsolutePath) Then
-            WScript.Echo "[Run] Running: " & strAbsolutePath
-            objShell.Run chr(34) & strAbsolutePath & chr(34), 1, boolWaitOnReturn
+            ' Run;Executable;Arguments
+            If UBound(arrParams)>=2 Then
+                strRunParam = chr(34) & strAbsolutePath & chr(34) & " " & arrParams(2)
+            ' Run;Executable
+            Else
+                strRunParam = chr(34) & strAbsolutePath & chr(34)
+            End If
+            WScript.Echo "[Run] Running: " & strRunParam
+            objShell.Run strRunParam, 1, boolWaitOnReturn
         Else
             WScript.Echo "[Run] Path not found: " & strAbsolutePath
         End If
@@ -158,3 +168,4 @@ Private Function WBS_CreateShortcut(arrParams)
         WScript.Echo "[CreateShortcut] Created successfully: " & strShortcutPath 
     End If
 End Function
+
