@@ -1,6 +1,7 @@
 Option Explicit
 
 Const ForReading = 1
+Const HKEY_LOCAL_MACHINE = &H80000002
 
 Dim objShell, objShellApp, objFSO, strScriptDir, strFilePath
 Set objShell = CreateObject("WScript.Shell")
@@ -17,7 +18,7 @@ End If
 strScriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
 strFilePath = strScriptDir & "\config.txt"
 
-WScript.Echo "WBS v0.3"
+WScript.Echo "WBS v0.4"
 WScript.Echo "[WBS] Directory: " & strScriptDir
 WScript.Echo "[WBS] Config: " & strFilePath
 
@@ -53,6 +54,9 @@ If objFSO.FileExists(strFilePath) Then
 
                 Case "ExecuteSql"
                     Call WBS_ExecuteSql(arrSplitLine)
+
+                Case "Uninstall"
+                    Call WBS_Uninstall(arrSplitLine)
 
                 Case Else
                     WScript.Echo "[WBS] Unknown command: " & strLine
@@ -112,7 +116,7 @@ End Sub
 ' Run;ExecutablePath;Arguments
 ' RunAndWait;ExecutablePath
 ' RunAndWait;ExecutablePath;Arguments
-Private Function WBS_Run(arrParams, boolWaitOnReturn)
+Private Sub WBS_Run(arrParams, boolWaitOnReturn)
     On Error Resume Next
     Dim strAbsolutePath, strRunParam
     If UBound(arrParams)>=1 And Len(arrParams(1)) > 0 Then
@@ -132,11 +136,11 @@ Private Function WBS_Run(arrParams, boolWaitOnReturn)
         End If
     End If
     On Error goto 0
-End Function
+End Sub
 
 ' Checks whether the file exists, if not, runs the installer
 ' AutoInstall;FilePath;InstallerPath
-Private Function WBS_AutoInstall(arrParams)
+Private Sub WBS_AutoInstall(arrParams)
     On Error Resume Next
     Dim strAbsolutePathFile, strAbsolutePathInstaller
     If UBound(arrParams)>=2 And Len(arrParams(1)) > 0 And Len(arrParams(2)) > 0 Then
@@ -150,13 +154,13 @@ Private Function WBS_AutoInstall(arrParams)
         End If
     End If
     On Error goto 0
-End Function
+End Sub
 
 ' Creates a shortcut / shell link (.lnk)
 ' CreateShortcut;ShortcutPath;TargetPath
 ' CreateIcon;ShortcutPath;TargetPath
 ' CreateLink;ShortcutPath;TargetPath
-Private Function WBS_CreateShortcut(arrParams)
+Private Sub WBS_CreateShortcut(arrParams)
     On Error Resume Next
     Dim objShortcut, strShortcutPath, strTargetPath, strWorkingDirectoryPath
     If UBound(arrParams)>=2 And Len(arrParams(1)) > 0 And Len(arrParams(2)) > 0 Then
@@ -175,7 +179,7 @@ Private Function WBS_CreateShortcut(arrParams)
         WScript.Echo "[CreateShortcut] Created successfully: " & strShortcutPath 
     End If
     On Error goto 0
-End Function
+End Sub
 
 ' Executes a SQL command with the connection string
 ' Depends on ODBC Connector: https://dev.mysql.com/downloads/connector/odbc/
@@ -183,26 +187,65 @@ End Function
 Private Sub WBS_ExecuteSql(arrParams)
     On Error Resume Next
     Dim objConnection, objCommand
-    If UBound(arrParams)>=5 Then
-        ' Create a connection to the MySQL server
-        Set objConnection = CreateObject("ADODB.Connection")
-        objConnection.ConnectionString = "Driver=" & arrParams(1) & ";Server=" & arrParams(2) & ";Database=" & arrParams(3) & ";User=" & arrParams(4) & ";Password=" & arrParams(5) & ";"
-        objConnection.Open
-        WScript.Echo "[ExecuteSql] Connection state: " & objConnection.State
-        ' Create a command object to execute the SQL statement
-        Set objCommand = CreateObject("ADODB.Command")
-        objCommand.ActiveConnection = objConnection
-        objCommand.CommandText = arrParams(6) & ";"
-        ' Execute the SQL statement
-        WScript.Echo "[ExecuteSql] Executing: " & arrParams(6) & ";"
-        objCommand.Execute
-        If Err.Number <> 0 Then
-            WScript.Echo "[ExecuteSql] Error: " & Err.Description
-        End If
-        ' Close the connection
-        objConnection.Close
-        Set objConnection = Nothing
-        Set objCommand = Nothing
+    ' Check for arguments
+    If UBound(arrParams)<5 Then
+        WScript.Echo "[ExecuteSql] Error: Not enough arguments"
+        Exit Sub
     End If
+    ' Create a connection to the MySQL server
+    Set objConnection = CreateObject("ADODB.Connection")
+    objConnection.ConnectionString = "Driver=" & arrParams(1) & ";Server=" & arrParams(2) & ";Database=" & arrParams(3) & ";User=" & arrParams(4) & ";Password=" & arrParams(5) & ";"
+    objConnection.Open
+    WScript.Echo "[ExecuteSql] Connection state: " & objConnection.State
+    ' Create a command object to execute the SQL statement
+    Set objCommand = CreateObject("ADODB.Command")
+    objCommand.ActiveConnection = objConnection
+    objCommand.CommandText = arrParams(6) & ";"
+    ' Execute the SQL statement
+    WScript.Echo "[ExecuteSql] Executing: " & arrParams(6) & ";"
+    objCommand.Execute
+    If Err.Number <> 0 Then
+        WScript.Echo "[ExecuteSql] Error: " & Err.Description
+    End If
+    ' Close the connection
+    objConnection.Close
+    Set objConnection = Nothing
+    Set objCommand = Nothing
     On Error goto 0
+End Sub
+
+' Uninstall any program that's in the registry
+Private Sub WBS_Uninstall(arrParams)
+    On Error Resume Next
+    ' Check for arguments
+    If UBound(arrParams)<2 Then
+        WScript.Echo "[Uninstall] Error: Not enough arguments"
+        Exit Sub
+    End If
+    ' Start
+    WScript.Echo "[Uninstall] Looking for items: *" & arrParams(1) & "*"
+    Dim objRegistry, strComputer, strKeyPath, strDisplayName, strUninstallString, strSubKey, strSubKeyPath, arrSubKeys
+    strComputer = "."
+    strKeyPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\"
+    Set objRegistry = GetObject("winmgmts:{impersonationLevel=impersonate}!\\" & strComputer & "\root\default:StdRegProv")
+    ' Get a list of keys inside strKeyPath
+    objRegistry.EnumKey HKEY_LOCAL_MACHINE, strKeyPath, arrSubKeys
+    For Each strSubKey In arrSubKeys
+        strDisplayName = ""
+        strUninstallString = ""
+        ' Get the DisplayName of the current item
+        strSubKeyPath = strKeyPath & strSubKey
+        objRegistry.GetStringValue HKEY_LOCAL_MACHINE, strSubKeyPath, "DisplayName", strDisplayName
+        ' Check if it's the correct name, if yes, get UninstallString's value
+        If InStr(1, strDisplayName, arrParams(1), vbTextCompare) = 1 Then
+            objRegistry.GetStringValue HKEY_LOCAL_MACHINE, strSubKeyPath, "UninstallString", strUninstallString
+            WScript.Echo "[Uninstall] Found: Key: " & strSubKey
+            WScript.Echo "                   DisplayName: " & strDisplayName
+            WScript.Echo "                   UninstallString: " & strUninstallString
+            ' /passive: only show progressbar /quiet: no UI (https://www.advancedinstaller.com/user-guide/msiexec.html)
+            objShell.Run strUninstallString & " /passive", 1, True
+            ' Exit For - Only uninstall the first matching item
+        End If
+    Next
+    On Error Goto 0
 End Sub

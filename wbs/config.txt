@@ -33,3 +33,5 @@
 
 # ExecuteSql;{MySQL ODBC 8.0 Unicode Driver};localhost;mysql;root;1234;DROP DATABASE vizsga
 # ExecuteSql;{MySQL ODBC 8.0 Unicode Driver};localhost;mysql;root;1234;CREATE DATABASE vizsga
+
+# Uninstall;Java

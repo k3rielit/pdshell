@@ -21,9 +21,9 @@ Comments, empty lines:
 Command lines:
 
 ```ps
-CommandType;param1
-CommandType;param1;param2
-CommandType;param1;param2;param3
+Command;param1
+Command;param1;param2
+Command;param1;param2;param3
 ```
 
 ```ps
@@ -36,6 +36,7 @@ CreateShortcut;shortcut\path\Shortcut.lnk;target\file.txt   # Creates a shortcut
 CreateIcon;icon\path\Icon.lnk;target\directory\             # Creates a shortcut
 CreateLink;icon\path\Icon.lnk;target\executable\program.exe # Creates a shortcut
 ExecuteSql;driver;server,database,uid,pwd;SQL               # Executes SQL
+Uninstall;DisplayName # Searches in the registry for *name* and uninstalls every occurrence
 ```
 
 ## NOTES
@@ -54,6 +55,8 @@ Paths can be:
 The `CreateShortcut`/`CreateIcon`/`CreateLink` commands work for executables, regular files, and directories as well. They're' just synonyms for the same command.
 
 The `ExecuteSql` command depends on the ODBC Connector ( [Download](https://dev.mysql.com/downloads/connector/odbc/) ). It needs the driver to be specified, it'll be `{MySQL ODBC 8.0 Unicode Driver}` for MySQL 8.0 for example.
+
+The `Uninstall` command searches for a program's key in *HKEY_USERS\S-1-5-19\Environment\TEMP*, then uninstalls it using MsiExec's passive mode (only a progressbar pops up).
 
 ## TODO
 
