@@ -215,10 +215,11 @@ Private Sub WBS_ExecuteSql(arrParams)
 End Sub
 
 ' Uninstall any program that's in the registry
+' Uninstall;DisplayNameContains
 Private Sub WBS_Uninstall(arrParams)
     On Error Resume Next
     ' Check for arguments
-    If UBound(arrParams)<2 Then
+    If UBound(arrParams)<1 Then
         WScript.Echo "[Uninstall] Error: Not enough arguments"
         Exit Sub
     End If
