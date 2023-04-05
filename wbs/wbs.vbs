@@ -134,6 +134,8 @@ Private Sub WBS_Run(arrParams, boolWaitOnReturn)
         Else
             WScript.Echo "[Run] Path not found: " & strAbsolutePath
         End If
+    Else
+        WScript.Echo "[CreateShortcut] Not enough arguments, or empty arguments."
     End If
     On Error goto 0
 End Sub
@@ -159,6 +161,8 @@ Private Sub WBS_AutoInstall(arrParams)
         Else
             WScript.Echo "[Install] Already installed: " & strAbsolutePathFile
         End If
+    Else
+        WScript.Echo "[CreateShortcut] Not enough arguments, or empty arguments."
     End If
     On Error goto 0
 End Sub
@@ -183,7 +187,9 @@ Private Sub WBS_CreateShortcut(arrParams)
         objShortcut.WindowStyle = 1 ' 1 = Normal window
         objShortcut.IconLocation = strTargetPath & ",0"
         objShortcut.Save
-        WScript.Echo "[CreateShortcut] Created successfully: " & strShortcutPath 
+        WScript.Echo "[CreateShortcut] Created successfully: " & strShortcutPath
+    Else
+        WScript.Echo "[CreateShortcut] Not enough arguments, or empty arguments."
     End If
     On Error goto 0
 End Sub
