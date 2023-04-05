@@ -35,3 +35,6 @@
 # ExecuteSql;{MySQL ODBC 8.0 Unicode Driver};localhost;mysql;root;1234;CREATE DATABASE vizsga
 
 # Uninstall;Java
+
+# AutoInstall;C:\non\existing\file.txt;C:\Windows\System32\notepad.exe
+# AutoInstall;C:\non\existing\file.txt;C:\Windows\System32\notepad.exe;C:\Windows\System32\slmgr.vbs

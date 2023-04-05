@@ -142,13 +142,20 @@ End Sub
 ' AutoInstall;FilePath;InstallerPath
 Private Sub WBS_AutoInstall(arrParams)
     On Error Resume Next
-    Dim strAbsolutePathFile, strAbsolutePathInstaller
+    Dim strAbsolutePathFile, strAbsolutePathInstaller, strRunParam
     If UBound(arrParams)>=2 And Len(arrParams(1)) > 0 And Len(arrParams(2)) > 0 Then
         strAbsolutePathFile = Pathfinder(arrParams(1))
         strAbsolutePathInstaller = Pathfinder(arrParams(2))
         If Not objFSO.FileExists(strAbsolutePathFile) Then
-            WScript.Echo "[Install] Installing: " & strAbsolutePathInstaller
-            objShell.Run chr(34) & strAbsolutePathInstaller & chr(34), 1, True
+            ' AutoInstall;FilePath;InstallerPath;Arguments
+            If UBound(arrParams)>=3 Then
+                strRunParam = chr(34) & strAbsolutePathInstaller & chr(34) & " " & arrParams(3)
+            ' AutoInstall;FilePath;InstallerPath
+            Else
+                strRunParam = chr(34) & strAbsolutePathInstaller & chr(34)
+            End If
+            WScript.Echo "[Install] Installing: " & strRunParam
+            objShell.Run strRunParam, 1, True
         Else
             WScript.Echo "[Install] Already installed: " & strAbsolutePathFile
         End If
