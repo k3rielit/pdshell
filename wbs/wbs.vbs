@@ -3,7 +3,7 @@ Option Explicit
 Const ForReading = 1
 Const HKEY_LOCAL_MACHINE = &H80000002
 
-Dim objShell, objShellApp, objFSO, strScriptDir, strFilePath
+Dim objShell, objShellApp, objFSO, strScriptDir, strFilePath, boolModifiedRootPath, strModifiedRootPath
 Set objShell = CreateObject("WScript.Shell")
 Set objShellApp = CreateObject("Shell.Application")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -17,8 +17,9 @@ End If
 ' Get the path to the script's directory and the path to the config file
 strScriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
 strFilePath = strScriptDir & "\config.txt"
+boolModifiedRootPath = False
 
-WScript.Echo "WBS v0.4"
+WScript.Echo "WBS v0.5"
 WScript.Echo "[WBS] Directory: " & strScriptDir
 WScript.Echo "[WBS] Config: " & strFilePath
 
@@ -58,6 +59,14 @@ If objFSO.FileExists(strFilePath) Then
                 Case "Uninstall"
                     Call WBS_Uninstall(arrSplitLine)
 
+                Case "SetRootPath"
+                    Call WBS_SetRootPath(arrSplitLine)
+
+                Case "UnsetRootPath"
+                    Call WBS_UnsetRootPath()
+                Case "DefaultRootPath"
+                    Call WBS_UnsetRootPath()
+
                 Case Else
                     WScript.Echo "[WBS] Unknown command: " & strLine
 
@@ -89,7 +98,10 @@ End Function
 Private Function Pathfinder(strPath)
     On Error Resume Next
     Dim strAbsolutePath
-    If Not objFSO.DriveExists(objFSO.GetDriveName(strPath)) Then
+    If Not objFSO.DriveExists(objFSO.GetDriveName(strPath)) And boolModifiedRootPath Then
+        strAbsolutePath = objFSO.BuildPath(strModifiedRootPath, strPath)
+        WScript.Echo "[Pathfinder] Relative: " & strPath & " > Absolute: " & strAbsolutePath
+    ElseIf Not objFSO.DriveExists(objFSO.GetDriveName(strPath)) Then
         strAbsolutePath = objFSO.GetAbsolutePathName(strPath)
         WScript.Echo "[Pathfinder] Relative: " & strPath & " > Absolute: " & strAbsolutePath
     Else
@@ -99,7 +111,7 @@ Private Function Pathfinder(strPath)
     On Error goto 0
 End Function
 
-' Function for creating a directory for a given relative/absolute file path 
+' Function for creating a directory for a given relative/absolute file path
 Private Sub AutoCreateDirectory(strPath)
     On Error Resume Next
     Dim strDirectoryPath, strAbsolutePath
@@ -109,6 +121,40 @@ Private Sub AutoCreateDirectory(strPath)
         objFSO.CreateFolder(strDirectoryPath)
     End If
     On Error goto 0
+End Sub
+
+' Replaces the default root path in Pathfinder()'s relative > absolute path converter
+' SetRootPath;Path
+Private Sub WBS_SetRootPath(arrParams)
+    On Error Resume Next
+    ' Check for arguments
+    If UBound(arrParams)<1 Then
+        WScript.Echo "[SetRootPath] Error: Not enough arguments"
+        Exit Sub
+    End If
+    ' Check the new root path
+    Dim strCheckedPath
+    If objFSO.FileExists(arrParams(1)) Then
+        strCheckedPath = objFSO.GetParentFolderName(arrParams(1))
+    ElseIf Not Right(strPath, 1) = "\" Then
+        strCheckedPath = arrParams(1) & "\"
+    End If
+    ' Set the new root path if it exists
+    If objFSO.FolderExists(strCheckedPath) Then
+        boolModifiedRootPath = True
+        strModifiedRootPath = strCheckedPath
+        WScript.Echo "[SetRootPath] New root: " & strModifiedRootPath
+    Else
+        WScript.Echo "[SetRootPath] Path doesn't exist, root path wasn't updated: " & strCheckedPath
+    End If
+    On Error Goto 0
+End Sub
+
+' Reverses SetRootPath (restores default root path)
+' UnsetRootPath
+Private Sub WBS_UnsetRootPath()
+    boolModifiedRootPath = False
+    strModifiedRootPath = ""
 End Sub
 
 ' Run an executable if it exists
@@ -142,6 +188,7 @@ End Sub
 
 ' Checks whether the file exists, if not, runs the installer
 ' AutoInstall;FilePath;InstallerPath
+' AutoInstall;FilePath;InstallerPath;Arguments
 Private Sub WBS_AutoInstall(arrParams)
     On Error Resume Next
     Dim strAbsolutePathFile, strAbsolutePathInstaller, strRunParam

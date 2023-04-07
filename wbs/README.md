@@ -37,6 +37,9 @@ CreateIcon;icon\path\Icon.lnk;target\directory\             # Creates a shortcut
 CreateLink;icon\path\Icon.lnk;target\executable\program.exe # Creates a shortcut
 ExecuteSql;driver;server,database,uid,pwd;SQL               # Executes SQL
 Uninstall;DisplayName # Searches in the registry for *name* and uninstalls every occurrence
+SetRootPath;Path # Changes script root to custom path in the relative > absolute path converter
+UnsetRootPath;   # Resets root path to default (script root)
+DefaultRootPath; # Alias of UnsetRootPath, resets root path to default (script root)
 ```
 
 ## NOTES

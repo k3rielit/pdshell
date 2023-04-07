@@ -1,7 +1,4 @@
 # Tests:
-
-# RunAndWait;.\installers\testinstaller.bat
-# RunAndWait;.\wrong\path\nonexisting.exe
 # Run;C:\Windows\System32\notepad.exe;C:\Windows\System32\slmgr.vbs
 # 
 # AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\installers\testinstaller.bat
@@ -31,10 +28,29 @@
 # CreateIcon;.\icons\WBSDir.lnk;.\
 # CreateIcon;.\icons\Public Directory.lnk;C:\Users\Public\Desktop\
 
+
+# RunAndWait Test
+# RunAndWait;.\installers\testinstaller.bat
+# RunAndWait;.\wrong\path\nonexisting.exe
+
+
+# ExecuteSql Test
 # ExecuteSql;{MySQL ODBC 8.0 Unicode Driver};localhost;mysql;root;1234;DROP DATABASE vizsga
 # ExecuteSql;{MySQL ODBC 8.0 Unicode Driver};localhost;mysql;root;1234;CREATE DATABASE vizsga
 
+
+# Uninstall Test
 # Uninstall;Java
 
+
+# AutoInstall Test
 # AutoInstall;C:\non\existing\file.txt;C:\Windows\System32\notepad.exe
 # AutoInstall;C:\non\existing\file.txt;C:\Windows\System32\notepad.exe;C:\Windows\System32\slmgr.vbs
+
+
+# SetRootPath, UnsetRootPath Test
+RunAndWait;C:\Windows\System32\notepad.exe
+SetRootPath;C:\Windows\System32
+RunAndWait;.\notepad.exe
+UnsetRootPath
+RunAndWait;.\notepad.exe
