@@ -6,7 +6,11 @@ VBScript for Windows automatization via a config file.
 
 * Create a `config.txt` file next to `wbs.vbs`.
 * Add comment, empty, or command lines to it.
-* `CLI` Run `wbs.bat` as administrator.
+* [Option 1] `CLI` Run `wbs.bat` as administrator.
+* [Option 2] Create a shell link (.lnk):
+  * TargetPath: C:\Windows\System32\cscript.exe
+  * Arguments: path\to\wbs.vbs
+  * Inside the config file you must set the root path (SetRootPath;path), otherwise it'll be System32
 
 ### CONFIG FILE
 
@@ -31,7 +35,8 @@ Run;path\program.exe                   # Run the executable, WaitOnReturn = Fals
 Run;path\program.exe;Arguments         # Run the executable, WaitOnReturn = False
 RunAndWait;path\program.exe;Arguments  # Run the executable, WaitOnReturn = True
 RunAndWait;path\program.exe            # Run the executable, WaitOnReturn = True
-AutoInstall;path\to\file;path\to\installer.exe  # If the file doesn't exist, runs the installer
+AutoInstall;path\to\file;path\to\installer.exe      # If the file doesn't exist, runs the installer
+AutoInstall;path\to\file;path\to\installer.exe;args # If the file doesn't exist, runs the installer
 CreateShortcut;shortcut\path\Shortcut.lnk;target\file.txt   # Creates a shortcut
 CreateIcon;icon\path\Icon.lnk;target\directory\             # Creates a shortcut
 CreateLink;icon\path\Icon.lnk;target\executable\program.exe # Creates a shortcut
@@ -40,6 +45,8 @@ Uninstall;DisplayName # Searches in the registry for *name* and uninstalls every
 SetRootPath;Path # Changes script root to custom path in the relative > absolute path converter
 UnsetRootPath;   # Resets root path to default (script root)
 DefaultRootPath; # Alias of UnsetRootPath, resets root path to default (script root)
+PressAnyKey         # Waits for keypress
+PressAnyKey;Message # Waits for keypress, displays the specified message
 ```
 
 ## NOTES
@@ -59,8 +66,13 @@ The `CreateShortcut`/`CreateIcon`/`CreateLink` commands work for executables, re
 
 The `ExecuteSql` command depends on the ODBC Connector ( [Download](https://dev.mysql.com/downloads/connector/odbc/) ). It needs the driver to be specified, it'll be `{MySQL ODBC 8.0 Unicode Driver}` for MySQL 8.0 for example.
 
-The `Uninstall` command searches for a program's key in *HKEY_USERS\S-1-5-19\Environment\TEMP*, then uninstalls it using MsiExec's passive mode (only a progressbar pops up).
+The `Uninstall` command searches for a program's key in *HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall*, then uninstalls it using MsiExec's passive mode (only a progressbar pops up).
 
 ## TODO
 
 * Workaround for CMD not supporting UNC paths (cli.bat) ( [Source](https://superuser.com/questions/282963/browse-an-unc-path-using-windows-cmd-without-mapping-it-to-a-network-drive) )
+* Use shell links instead of cli.bat
+* Commands as arguments
+* Move command processor into Sub
+* Dynamically link config files instead of the hardcoded config.txt
+* Better documentation for commands

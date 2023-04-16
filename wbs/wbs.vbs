@@ -19,7 +19,7 @@ strScriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
 strFilePath = strScriptDir & "\config.txt"
 boolModifiedRootPath = False
 
-WScript.Echo "WBS v0.5"
+WScript.Echo "WBS v0.6"
 WScript.Echo "[WBS] Directory: " & strScriptDir
 WScript.Echo "[WBS] Config: " & strFilePath
 
@@ -67,6 +67,12 @@ If objFSO.FileExists(strFilePath) Then
                 Case "DefaultRootPath"
                     Call WBS_UnsetRootPath()
 
+                Case "PressAnyKey"
+                    Call WBS_PressAnyKey(arrSplitLine)
+
+                Case "MsiInstall"
+                    Call WBS_MsiInstall(arrSplitLine)
+
                 Case Else
                     WScript.Echo "[WBS] Unknown command: " & strLine
 
@@ -76,7 +82,7 @@ If objFSO.FileExists(strFilePath) Then
     Loop
     objFile.Close
 Else
-    WScript.Echo "[WBS] Config file not found."
+    WScript.Echo "[WBS] Config file not found: " & strFilePath
     WScript.Quit
 End If
 
@@ -98,10 +104,11 @@ End Function
 Private Function Pathfinder(strPath)
     On Error Resume Next
     Dim strAbsolutePath
-    If Not objFSO.DriveExists(objFSO.GetDriveName(strPath)) And boolModifiedRootPath Then
+    ' Alternative: Not objFSO.DriveExists(objFSO.GetDriveName(strPath))
+    If Left(strPath, 2) = ".\" And boolModifiedRootPath Then
         strAbsolutePath = objFSO.BuildPath(strModifiedRootPath, strPath)
         WScript.Echo "[Pathfinder] Relative: " & strPath & " > Absolute: " & strAbsolutePath
-    ElseIf Not objFSO.DriveExists(objFSO.GetDriveName(strPath)) Then
+    ElseIf Left(strPath, 2) = ".\" Then
         strAbsolutePath = objFSO.GetAbsolutePathName(strPath)
         WScript.Echo "[Pathfinder] Relative: " & strPath & " > Absolute: " & strAbsolutePath
     Else
@@ -214,7 +221,7 @@ Private Sub WBS_AutoInstall(arrParams)
     On Error goto 0
 End Sub
 
-' Creates a shortcut / shell link (.lnk)
+' Creates a shell link (.lnk)
 ' CreateShortcut;ShortcutPath;TargetPath
 ' CreateIcon;ShortcutPath;TargetPath
 ' CreateLink;ShortcutPath;TargetPath
@@ -230,6 +237,9 @@ Private Sub WBS_CreateShortcut(arrParams)
         ' Create shortcut
         Set objShortcut = objShell.CreateShortcut(strShortcutPath)
         objShortcut.TargetPath = strTargetPath
+        If UBound(arrParams)>=3 Then
+            objShortcut.Arguments = arrParams(3)
+        End If
         objShortcut.WorkingDirectory = strWorkingDirectoryPath
         objShortcut.WindowStyle = 1 ' 1 = Normal window
         objShortcut.IconLocation = strTargetPath & ",0"
@@ -308,5 +318,35 @@ Private Sub WBS_Uninstall(arrParams)
             ' Exit For - Only uninstall the first matching item
         End If
     Next
+    On Error Goto 0
+End Sub
+
+' Waits for a keypress, and optionally displays a message
+' PressAnyKey
+' PressAnyKey;Message
+Private Sub WBS_PressAnyKey(arrParams)
+    On Error Resume Next
+    ' Check if there's a message argument
+    If UBound(arrParams)=0 Then
+        WScript.Echo "[PressAnyKey] Waiting for keypress..."
+    ElseIf UBound(arrParams)>=1 Then
+        WScript.Echo "[PressAnyKey] " & arrParams(1)
+    End If
+    WScript.StdIn.Read(1)
+    On Error Goto 0
+End Sub
+
+' Installs an msi package using msiexec.exe, with passive UI by default
+' MsiInstall;installer.msi
+' MsiInstall;installer;msi;Arguments
+Private Sub WBS_MsiInstall(arrParams)
+    On Error Resume Next
+    ' Check for arguments
+    If UBound(arrParams)<1 Then
+        WScript.Echo "[MsiInstall] Error: Not enough arguments"
+        Exit Sub
+    End If
+    ' TODO
+    WScript.Echo "[MsiInstall] Error: Feature not implemented yet"
     On Error Goto 0
 End Sub

@@ -1,0 +1,60 @@
+SetRootPath;\\
+
+# PYTHON, IDLE
+RunAndWait;.\installers\python-3.10.5-amd64.exe;/uninstall /quiet
+RunAndWait;.\installers\python-3.10.5-amd64.exe;/quiet InstallAllUsers=1 PrependPath=1
+# CreateIcon;C:\Users\Public\Desktop\IDLE.lnk;C:\Program Files\Python310
+
+# PYCHARM (replace PATH)
+RunAndWait;C:\Program Files (x86)\JetBrains\PyCharm Community Edition 2022.2\bin\Uninstall.exe;/S
+RunAndWait;.\installers\pycharm-community-2022.2.exe;/S /CONFIG=PATH\installers\silent.config
+
+# GIMP (TODO: use AutoInstall instead)
+RunAndWait;C:\Program Files\GIMP 2\uninst\unins000.exe;/VERYSILENT
+RunAndWait;.\installers\gimp-2.10.32.exe;/VERYSILENT /NORESTART /ALLUSERS
+CreateIcon;C:\Users\Public\Desktop\Gimp.lnk;C:\Program Files\GIMP 2\bin\gimp-2.10.exe
+
+# JAVA 8u341 (TODO: use AutoInstall instead)
+Uninstall;Java
+RunAndWait;.\installers\jdk-8u341-windows-x64.exe;/s
+
+# IRFANVIEW 32bit
+# RunAndWait;C:\Program Files (x86)\IrfanView\iv_uninstall.exe;/silent
+# AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\installers\iview462_32bit_setup.exe;/desktop=1 /thumbs=1 /silent /group=1 /allusers=1 /assoc=1
+# CreateIcon;C:\Users\Public\Desktop\IrfanView 32bit.lnk;C:\Program Files (x86)\IrfanView\i_view32.exe
+
+# IRFANVIEW 64bit
+# RunAndWait;C:\Program Files\IrfanView\iv_uninstall.exe;/silent
+AutoInstall;C:\Program Files\IrfanView\i_view64.exe;.\installers\iview462_64bit_setup.exe;/desktop=1 /thumbs=1 /silent /group=1 /allusers=1 /assoc=1
+# CreateIcon;C:\Users\Public\Desktop\IrfanView 64bit.lnk;C:\Program Files\IrfanView\i_view64.exe
+
+# SEAMONKEY (TODO: uninstall, AutoInstall file path)
+AutoInstall;C:\idk\idk\idk\idk\idk\idk.exe;.\installers\seamonkey-2.53.3.hu.win64.installer.exe;/S
+CreateIcon;C:\Users\Public\Desktop\SeaMonkey.lnk;C:\Program Files\SeaMonkey\seamonkey.exe
+
+# INKSCAPE (TODO: uninstall, MsiInstall)
+# CreateIcon;C:\Users\Public\Desktop\Inkscape.lnk;C:\Program Files\Inkscape\bin\inkscape.exe
+
+# VEYON (TODO: uninstall)
+RunAndWait;.\installers\veyon.exe;/S /NoMaster
+
+# install, activate Office2019 (TODO: uninstall, might have to use absolute path to xml)
+# RunAndWait;.\installers\Office2019\setup.exe;/configure configuration.xml
+# RunAndWait;.\scripts\tisztaszoftver_office2019_x64.bat
+
+# Activate Windows 10 Enterprise
+RunAndWait;.\scripts\tisztaszoftver_w10enterprise.bat
+
+# VCREDIST
+RunAndWait;.\installers\vcredist_2015_2022_x64.exe;/Q
+
+# KLAVARO (TODO: uninstall)
+AutoInstall;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\installers\Klavaro-2.00c-win.exe
+CreateIcon;C:\Users\Public\Desktop\Klavaro.lnk;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe
+
+# VSCODE (TODO: uninstall)
+AutoInstall;C:\Program Files\Microsoft VS Code\Code.exe;.\installers\VSCodeUserSetup-x64-1.76.0.exe
+CreateIcon;C:\Users\Public\Desktop\VS Code.lnk;C:\Program Files\Microsoft VS Code\Code.exe
+
+# Final DelProf2
+# Run;.\programs\DelProf2.exe
