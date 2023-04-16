@@ -1,4 +1,0 @@
-SetRootPath;D:\Repos\wintools\wbs\test\
-CreateLink;.\test.lnk;C:\Windows\System32\notepad.exe
-RunAndWait;.\test.lnk
-PressAnyKey;Working

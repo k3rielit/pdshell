@@ -4,13 +4,11 @@ VBScript for Windows automatization via a config file.
 
 ## HOW TO USE
 
-* Create a `config.txt` file next to `wbs.vbs`.
-* Add comment, empty, or command lines to it.
-* [Option 1] `CLI` Run `wbs.bat` as administrator.
+* [Option 1] Edit cli.bat:
+  * `cscript "<wbs.vbs absolute path>" "command;arg" "command;arg"`
 * [Option 2] Create a shell link (.lnk):
-  * TargetPath: C:\Windows\System32\cscript.exe
-  * Arguments: path\to\wbs.vbs
-  * Inside the config file you must set the root path (SetRootPath;path), otherwise it'll be System32
+  * Target: `C:\Windows\System32\cscript.exe "C:\path\to\wbs.vbs" "command;arg" "command;arg"`
+* Use `SetRootPath;path` if you're using relative paths, because it'll be System32
 
 ### CONFIG FILE
 
@@ -31,6 +29,12 @@ Command;param1;param2;param3
 ```
 
 ```ps
+ProcessConfig;path\config.txt # Reads the file and executes commands
+SetRootPath;Path # Changes script root to custom path in the relative > absolute path converter
+UnsetRootPath    # Resets root path to default (script root)
+DefaultRootPath  # Alias of UnsetRootPath, resets root path to default (script root)
+PressAnyKey         # Waits for keypress
+PressAnyKey;Message # Waits for keypress, displays the specified message
 Run;path\program.exe                   # Run the executable, WaitOnReturn = False
 Run;path\program.exe;Arguments         # Run the executable, WaitOnReturn = False
 RunAndWait;path\program.exe;Arguments  # Run the executable, WaitOnReturn = True
@@ -42,11 +46,6 @@ CreateIcon;icon\path\Icon.lnk;target\directory\             # Creates a shortcut
 CreateLink;icon\path\Icon.lnk;target\executable\program.exe # Creates a shortcut
 ExecuteSql;driver;server,database,uid,pwd;SQL               # Executes SQL
 Uninstall;DisplayName # Searches in the registry for *name* and uninstalls every occurrence
-SetRootPath;Path # Changes script root to custom path in the relative > absolute path converter
-UnsetRootPath;   # Resets root path to default (script root)
-DefaultRootPath; # Alias of UnsetRootPath, resets root path to default (script root)
-PressAnyKey         # Waits for keypress
-PressAnyKey;Message # Waits for keypress, displays the specified message
 ```
 
 ## NOTES

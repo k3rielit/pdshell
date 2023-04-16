@@ -1,4 +1,2 @@
 @echo off
-@setlocal enableextensions
-@cd /d "%~dp0"
-cscript //nologo wbs.vbs
+cscript "D:\Repos\wintools\wbs\wbs.vbs" "SetRootPath;D:\Repos\wintools\wbs\" "ProcessConfig;.\configs\config.txt"

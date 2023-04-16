@@ -1,12 +1,14 @@
 Option Explicit
 
+' Set critical constants, objects, variables
 Const ForReading = 1
 Const HKEY_LOCAL_MACHINE = &H80000002
 
-Dim objShell, objShellApp, objFSO, strScriptDir, strFilePath, boolModifiedRootPath, strModifiedRootPath
+Dim objShell, objShellApp, objFSO, arrScriptArgs, strScriptArg, strScriptDir, boolModifiedRootPath, strModifiedRootPath
 Set objShell = CreateObject("WScript.Shell")
 Set objShellApp = CreateObject("Shell.Application")
 Set objFSO = CreateObject("Scripting.FileSystemObject")
+Set arrScriptArgs = WScript.Arguments
 
 ' Check if the script is running with administrator privileges
 If Not IsAdmin() Then
@@ -16,75 +18,27 @@ End If
 
 ' Get the path to the script's directory and the path to the config file
 strScriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
-strFilePath = strScriptDir & "\config.txt"
 boolModifiedRootPath = False
 
-WScript.Echo "WBS v0.6"
+WScript.Echo "WBS v0.7"
 WScript.Echo "[WBS] Directory: " & strScriptDir
-WScript.Echo "[WBS] Config: " & strFilePath
 
-' Check if the config file exists and read its contents if it does
-If objFSO.FileExists(strFilePath) Then
-    Dim objFile, strLine, arrSplitLine
-    Set objFile = objFSO.OpenTextFile(strFilePath, ForReading)
-    Do Until objFile.AtEndOfStream
-        strLine = objFile.ReadLine
-        strLine = Trim(strLine) ' Remove any leading or trailing spaces
-        ' Check if the line is not empty and does not start with #
-        If Len(strLine) > 0 And Left(strLine, 1) <> "#" Then
-            Call ProcessCommand(strLine)
-        End If
-    Loop
-    objFile.Close
+' Loop through arguments and process possible commands
+If WScript.Arguments.Count = 0 Then
+    Dim arrErrorParams
+    arrErrorParams = Array("PressAnyKey","Missing command line arguments. Run the script like this: [C:\Windows\System32\cscript.exe ""D:\path\wbs.vbs""  ""command;arg"" ""command;arg""]")
+    WBS_PressAnyKey(arrErrorParams)
 Else
-    WScript.Echo "[WBS] Config file not found: " & strFilePath
-    WScript.Quit
+    For Each strScriptArg In arrScriptArgs
+        Call ProcessCommand(strScriptArg)
+    Next
 End If
-
-Private Sub ProcessCommand(strLine)
-    On Error Resume Next
-    Dim arrSplitLine
-    arrSplitLine = Split(strLine, ";")
-    WScript.Echo "-----------------------< " & arrSplitLine(0) & " >-----------------------"
-    ' Switch command type
-    Select Case arrSplitLine(0)
-        Case "Run"
-            Call WBS_Run(arrSplitLine,False)
-        Case "RunAndWait"
-            Call WBS_Run(arrSplitLine,True)
-        Case "AutoInstall"
-            Call WBS_AutoInstall(arrSplitLine)
-        Case "CreateShortcut"
-            Call WBS_CreateShortcut(arrSplitLine)
-        Case "CreateIcon"
-            Call WBS_CreateShortcut(arrSplitLine)
-        Case "CreateLink"
-            Call WBS_CreateShortcut(arrSplitLine)
-        Case "ExecuteSql"
-            Call WBS_ExecuteSql(arrSplitLine)
-        Case "Uninstall"
-            Call WBS_Uninstall(arrSplitLine)
-        Case "SetRootPath"
-            Call WBS_SetRootPath(arrSplitLine)
-        Case "UnsetRootPath"
-            Call WBS_UnsetRootPath()
-        Case "DefaultRootPath"
-            Call WBS_UnsetRootPath()
-        Case "PressAnyKey"
-            Call WBS_PressAnyKey(arrSplitLine)
-        Case "MsiInstall"
-            Call WBS_MsiInstall(arrSplitLine)
-        Case Else
-            WScript.Echo "[ProcessCommand] Unknown command: " & strLine
-    End Select
-    On Error goto 0
-End Sub
 
 ' Check if the script is running with administrator privileges
 Private Function IsAdmin()
     On Error Resume Next
     objShell.RegRead("HKEY_USERS\S-1-5-19\Environment\TEMP")
-    If Err.number = 0 Then 
+    If Err.number = 0 Then
         IsAdmin = True
     Else
         IsAdmin = False
@@ -123,6 +77,81 @@ Private Sub AutoCreateDirectory(strPath)
     On Error goto 0
 End Sub
 
+' Processes a command line (like PressAnyKey;Message) without error checking
+Private Sub ProcessCommand(strCommandLine)
+    On Error Resume Next
+    Dim arrSplitLine, strTrimmedCommandLine
+    strTrimmedCommandLine = Trim(strCommandLine)
+    ' Check if the line is not empty and does not start with #
+    If Len(strTrimmedCommandLine) > 0 And Left(strTrimmedCommandLine, 1) <> "#" Then
+        arrSplitLine = Split(strTrimmedCommandLine, ";")
+        WScript.Echo "-----------------------< " & arrSplitLine(0) & " >-----------------------"
+        ' Switch command type
+        Select Case arrSplitLine(0)
+            Case "ProcessConfig"
+                Call WBS_ProcessConfig(arrSplitLine)
+            Case "Run"
+                Call WBS_Run(arrSplitLine,False)
+            Case "RunAndWait"
+                Call WBS_Run(arrSplitLine,True)
+            Case "AutoInstall"
+                Call WBS_AutoInstall(arrSplitLine)
+            Case "CreateShortcut"
+                Call WBS_CreateShortcut(arrSplitLine)
+            Case "CreateIcon"
+                Call WBS_CreateShortcut(arrSplitLine)
+            Case "CreateLink"
+                Call WBS_CreateShortcut(arrSplitLine)
+            Case "ExecuteSql"
+                Call WBS_ExecuteSql(arrSplitLine)
+            Case "Uninstall"
+                Call WBS_Uninstall(arrSplitLine)
+            Case "SetRootPath"
+                Call WBS_SetRootPath(arrSplitLine)
+            Case "UnsetRootPath"
+                Call WBS_UnsetRootPath()
+            Case "DefaultRootPath"
+                Call WBS_UnsetRootPath()
+            Case "PressAnyKey"
+                Call WBS_PressAnyKey(arrSplitLine)
+            Case "MsiInstall"
+                Call WBS_MsiInstall(arrSplitLine)
+            Case Else
+                WScript.Echo "[ProcessCommand] Unknown command: " & strLine
+        End Select
+    End If
+    On Error goto 0
+End Sub
+
+' Loads and processes a config file
+Private Sub WBS_ProcessConfig(arrParams)
+    On Error Resume Next
+    ' Check for arguments
+    If UBound(arrParams)<1 Then
+        WScript.Echo "[ProcessConfig] Error: No arguments"
+        Exit Sub
+    End If
+    ' Try reading the file
+    Dim strAbsoluteConfigPath, objConfigFile, strConfigLine
+    strAbsoluteConfigPath = Pathfinder(arrParams(1))
+    If objFSO.FileExists(strAbsoluteConfigPath) Then
+        WScript.Echo "[ProcessConfig] Reading: " & strAbsoluteConfigPath
+        Set objConfigFile = objFSO.OpenTextFile(strAbsoluteConfigPath, ForReading)
+        Do Until objConfigFile.AtEndOfStream
+            strConfigLine = objConfigFile.ReadLine
+            strConfigLine = Trim(strConfigLine)
+            ' Check if the line is not empty and does not start with #
+            If Len(strConfigLine) > 0 And Left(strConfigLine, 1) <> "#" Then
+                Call ProcessCommand(strConfigLine)
+            End If
+        Loop
+        objConfigFile.Close
+    Else
+        WScript.Echo "[ProcessConfig] File doesn't exist: " & strAbsoluteConfigPath
+    End If
+    On Error Goto 0
+End Sub
+
 ' Replaces the default root path in Pathfinder()'s relative > absolute path converter
 ' SetRootPath;Path
 Private Sub WBS_SetRootPath(arrParams)
@@ -136,8 +165,8 @@ Private Sub WBS_SetRootPath(arrParams)
     Dim strCheckedPath, arrErrorParams
     If objFSO.FileExists(arrParams(1)) Then
         strCheckedPath = objFSO.GetParentFolderName(arrParams(1))
-    ElseIf Not Right(strPath, 1) = "\" Then
-        strCheckedPath = arrParams(1) & "\"
+    Else
+        strCheckedPath = arrParams(1)
     End If
     ' Set the new root path if it exists
     If objFSO.FolderExists(strCheckedPath) Then
