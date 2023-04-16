@@ -32,52 +32,7 @@ If objFSO.FileExists(strFilePath) Then
         strLine = Trim(strLine) ' Remove any leading or trailing spaces
         ' Check if the line is not empty and does not start with #
         If Len(strLine) > 0 And Left(strLine, 1) <> "#" Then
-            arrSplitLine = Split(strLine, ";")
-            WScript.Echo "-----------------------< " & arrSplitLine(0) & " >-----------------------"
-
-            ' Switch command type
-            Select Case arrSplitLine(0)
-                Case "Run"
-                    Call WBS_Run(arrSplitLine,False)
-
-                Case "RunAndWait"
-                    Call WBS_Run(arrSplitLine,True)
-
-                Case "AutoInstall"
-                    Call WBS_AutoInstall(arrSplitLine)
-
-                Case "CreateShortcut"
-                    Call WBS_CreateShortcut(arrSplitLine)
-                Case "CreateIcon"
-                    Call WBS_CreateShortcut(arrSplitLine)
-                Case "CreateLink"
-                    Call WBS_CreateShortcut(arrSplitLine)
-
-                Case "ExecuteSql"
-                    Call WBS_ExecuteSql(arrSplitLine)
-
-                Case "Uninstall"
-                    Call WBS_Uninstall(arrSplitLine)
-
-                Case "SetRootPath"
-                    Call WBS_SetRootPath(arrSplitLine)
-
-                Case "UnsetRootPath"
-                    Call WBS_UnsetRootPath()
-                Case "DefaultRootPath"
-                    Call WBS_UnsetRootPath()
-
-                Case "PressAnyKey"
-                    Call WBS_PressAnyKey(arrSplitLine)
-
-                Case "MsiInstall"
-                    Call WBS_MsiInstall(arrSplitLine)
-
-                Case Else
-                    WScript.Echo "[WBS] Unknown command: " & strLine
-
-            End Select
-
+            Call ProcessCommand(strLine)
         End If
     Loop
     objFile.Close
@@ -86,6 +41,44 @@ Else
     WScript.Quit
 End If
 
+Private Sub ProcessCommand(strLine)
+    On Error Resume Next
+    Dim arrSplitLine
+    arrSplitLine = Split(strLine, ";")
+    WScript.Echo "-----------------------< " & arrSplitLine(0) & " >-----------------------"
+    ' Switch command type
+    Select Case arrSplitLine(0)
+        Case "Run"
+            Call WBS_Run(arrSplitLine,False)
+        Case "RunAndWait"
+            Call WBS_Run(arrSplitLine,True)
+        Case "AutoInstall"
+            Call WBS_AutoInstall(arrSplitLine)
+        Case "CreateShortcut"
+            Call WBS_CreateShortcut(arrSplitLine)
+        Case "CreateIcon"
+            Call WBS_CreateShortcut(arrSplitLine)
+        Case "CreateLink"
+            Call WBS_CreateShortcut(arrSplitLine)
+        Case "ExecuteSql"
+            Call WBS_ExecuteSql(arrSplitLine)
+        Case "Uninstall"
+            Call WBS_Uninstall(arrSplitLine)
+        Case "SetRootPath"
+            Call WBS_SetRootPath(arrSplitLine)
+        Case "UnsetRootPath"
+            Call WBS_UnsetRootPath()
+        Case "DefaultRootPath"
+            Call WBS_UnsetRootPath()
+        Case "PressAnyKey"
+            Call WBS_PressAnyKey(arrSplitLine)
+        Case "MsiInstall"
+            Call WBS_MsiInstall(arrSplitLine)
+        Case Else
+            WScript.Echo "[ProcessCommand] Unknown command: " & strLine
+    End Select
+    On Error goto 0
+End Sub
 
 ' Check if the script is running with administrator privileges
 Private Function IsAdmin()
@@ -140,7 +133,7 @@ Private Sub WBS_SetRootPath(arrParams)
         Exit Sub
     End If
     ' Check the new root path
-    Dim strCheckedPath
+    Dim strCheckedPath, arrErrorParams
     If objFSO.FileExists(arrParams(1)) Then
         strCheckedPath = objFSO.GetParentFolderName(arrParams(1))
     ElseIf Not Right(strPath, 1) = "\" Then
@@ -153,6 +146,8 @@ Private Sub WBS_SetRootPath(arrParams)
         WScript.Echo "[SetRootPath] New root: " & strModifiedRootPath
     Else
         WScript.Echo "[SetRootPath] Path doesn't exist, root path wasn't updated: " & strCheckedPath
+        arrErrorParams = Array("PressAnyKey","If you want to continue anyways, press any key...")
+        WBS_PressAnyKey(arrErrorParams)
     End If
     On Error Goto 0
 End Sub
