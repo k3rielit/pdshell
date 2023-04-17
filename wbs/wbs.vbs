@@ -20,7 +20,7 @@ End If
 strScriptDir = objFSO.GetParentFolderName(WScript.ScriptFullName)
 boolModifiedRootPath = False
 
-WScript.Echo "WBS v0.7"
+WScript.Echo "WBS v0.8"
 WScript.Echo "[WBS] Directory: " & strScriptDir
 
 ' Loop through arguments and process possible commands
@@ -77,6 +77,11 @@ Private Sub AutoCreateDirectory(strPath)
     On Error goto 0
 End Sub
 
+' Returns True if str starts with prefix
+Private Function StartsWith(str, prefix)
+    StartsWith = Left(str, Len(prefix)) = prefix
+End Function
+
 ' Processes a command line (like PressAnyKey;Message) without error checking
 Private Sub ProcessCommand(strCommandLine)
     On Error Resume Next
@@ -105,7 +110,11 @@ Private Sub ProcessCommand(strCommandLine)
             Case "ExecuteSql"
                 Call WBS_ExecuteSql(arrSplitLine)
             Case "Uninstall"
-                Call WBS_Uninstall(arrSplitLine)
+                Call WBS_Uninstall(arrSplitLine,False)
+            Case "UninstallWithChildren"
+                Call WBS_Uninstall(arrSplitLine,True)
+            Case "AutoUninstall"
+                Call WBS_AutoUninstall(arrSplitLine)
             Case "SetRootPath"
                 Call WBS_SetRootPath(arrSplitLine)
             Case "UnsetRootPath"
@@ -310,7 +319,8 @@ End Sub
 
 ' Uninstall any program that's in the registry
 ' Uninstall;DisplayNameContains
-Private Sub WBS_Uninstall(arrParams)
+' UninstallWithChildren;DisplayNameContains
+Private Sub WBS_Uninstall(arrParams, boolWithChildren)
     On Error Resume Next
     ' Check for arguments
     If UBound(arrParams)<1 Then
@@ -319,7 +329,7 @@ Private Sub WBS_Uninstall(arrParams)
     End If
     ' Start
     WScript.Echo "[Uninstall] Looking for items: *" & arrParams(1) & "*"
-    Dim objRegistry, strComputer, strKeyPath, strDisplayName, strUninstallString, strSubKey, strSubKeyPath, arrSubKeys
+    Dim objRegistry, strComputer, strKeyPath, strDisplayName, strParentDisplayName, strUninstallString, strSubKey, strSubKeyPath, arrSubKeys
     strComputer = "."
     strKeyPath = "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\"
     Set objRegistry = GetObject("winmgmts:{impersonationLevel=impersonate}!\\" & strComputer & "\root\default:StdRegProv")
@@ -327,21 +337,59 @@ Private Sub WBS_Uninstall(arrParams)
     objRegistry.EnumKey HKEY_LOCAL_MACHINE, strKeyPath, arrSubKeys
     For Each strSubKey In arrSubKeys
         strDisplayName = ""
+        strParentDisplayName = ""
         strUninstallString = ""
         ' Get the DisplayName of the current item
         strSubKeyPath = strKeyPath & strSubKey
         objRegistry.GetStringValue HKEY_LOCAL_MACHINE, strSubKeyPath, "DisplayName", strDisplayName
+        objRegistry.GetStringValue HKEY_LOCAL_MACHINE, strSubKeyPath, "ParentDisplayName", strParentDisplayName
         ' Check if it's the correct name, if yes, get UninstallString's value
-        If InStr(1, strDisplayName, arrParams(1), vbTextCompare) = 1 Then
+        If InStr(1, strDisplayName, arrParams(1), vbTextCompare) = 1 Or ( boolWithChildren And InStr(1, strParentDisplayName, arrParams(1), vbTextCompare) = 1 ) Then
             objRegistry.GetStringValue HKEY_LOCAL_MACHINE, strSubKeyPath, "UninstallString", strUninstallString
-            WScript.Echo "[Uninstall] Found: Key: " & strSubKey
-            WScript.Echo "                   DisplayName: " & strDisplayName
-            WScript.Echo "                   UninstallString: " & strUninstallString
+            WScript.Echo "[Uninstall] Key: " & strSubKey
+            WScript.Echo "            DisplayName: " & strDisplayName
+            WScript.Echo "            UninstallString: " & strUninstallString
             ' /passive: only show progressbar /quiet: no UI (https://www.advancedinstaller.com/user-guide/msiexec.html)
-            objShell.Run strUninstallString & " /passive", 1, True
+            If InStr(1, strUninstallString, "MsiExec", vbTextCompare) = 1 Or InStr(1, strUninstallString, "msiexec", vbTextCompare) = 1 Then
+                WScript.Echo "   > Uninstalling in passive msiexec mode..."
+                objShell.Run strUninstallString & " /passive", 1, True
+            Else
+                WScript.Echo "   > Uninstalling as regular executable..."
+                objShell.Run strUninstallString, 1, True
+            End If
             ' Exit For - Only uninstall the first matching item
         End If
     Next
+    On Error Goto 0
+End Sub
+
+'
+' AutoUninstall;file;uninstaller
+' AutoUninstall;file;uninstaller;Arguments
+' TODO: AutoUninstall;file;uninstaller;Arguments;DisplayName
+Private Sub WBS_AutoUninstall(arrParams)
+    On Error Resume Next
+    ' Check for arguments
+    If UBound(arrParams)<2 Then
+        WScript.Echo "[AutoUninstall] Error: Not enough arguments"
+        Exit Sub
+    End If
+    Dim strFileAbsolutePath, strUninstallerAbsolutePath, strRunParam
+    strFileAbsolutePath = Pathfinder(arrParams(1))
+    strUninstallerAbsolutePath = Pathfinder(arrParams(2))
+    If objFSO.FileExists(strFileAbsolutePath) And objFSO.FileExists(strUninstallerAbsolutePath) Then
+        ' Uninstall with or without arguments
+        If UBound(arrParams)>=3 Then
+            strRunParam = chr(34) & strUninstallerAbsolutePath & chr(34) & " " & arrParams(3)
+        Else
+            strRunParam = chr(34) & strUninstallerAbsolutePath & chr(34)
+        End If
+        WScript.Echo "[AutoUninstall] Uninstalling: " & strRunParam
+        objShell.Run strRunParam, 1, True
+    Else
+        WScript.Echo "[AutoUninstall] File or installer doesn't exist:"
+        WScript.Echo strFileAbsolutePath & " / " & strAbsolutePathInstaller
+    End If
     On Error Goto 0
 End Sub
 
@@ -362,7 +410,7 @@ End Sub
 
 ' Installs an msi package using msiexec.exe, with passive UI by default
 ' MsiInstall;installer.msi
-' MsiInstall;installer;msi;Arguments
+' MsiInstall;installer.msi;Arguments
 Private Sub WBS_MsiInstall(arrParams)
     On Error Resume Next
     ' Check for arguments
@@ -370,7 +418,17 @@ Private Sub WBS_MsiInstall(arrParams)
         WScript.Echo "[MsiInstall] Error: Not enough arguments"
         Exit Sub
     End If
-    ' TODO
-    WScript.Echo "[MsiInstall] Error: Feature not implemented yet"
+    Dim strAbsoluteMsiPath
+    strAbsoluteMsiPath = Pathfinder(arrParams(1))
+    ' Detect additional arguments, or use /passive by default
+    If UBound(arrParams)>=2 And objFSO.FileExists(strAbsoluteMsiPath) Then
+        WScript.Echo "[MsiInstall] Installing: " & strAbsoluteMsiPath & " " & arrParams(2)
+        objShell.Run "msiexec.exe /i " & strAbsoluteMsiPath & " " & arrParams(2), 1, True
+    ElseIf objFSO.FileExists(strAbsoluteMsiPath) Then
+        WScript.Echo "[MsiInstall] Installing: " & strAbsoluteMsiPath & " /passive"
+        objShell.Run "msiexec.exe /i " & strAbsoluteMsiPath & " /passive", 1, True
+    Else
+        WScript.Echo "[MsiInstall] Installer not found: " & strAbsoluteMsiPath
+    End If
     On Error Goto 0
 End Sub

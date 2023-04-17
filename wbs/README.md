@@ -46,6 +46,11 @@ CreateIcon;icon\path\Icon.lnk;target\directory\             # Creates a shortcut
 CreateLink;icon\path\Icon.lnk;target\executable\program.exe # Creates a shortcut
 ExecuteSql;driver;server,database,uid,pwd;SQL               # Executes SQL
 Uninstall;DisplayName # Searches in the registry for *name* and uninstalls every occurrence
+UninstallWithChildren;DisplayName # Same, but looking for ParentDisplayName as well
+AutoUninstall;file;uninstaller           # If the file exists, runs the uninstaller
+AutoUninstall;file;uninstaller;Arguments # Same with arguments
+MsiInstall;installer.msi           # Installs an msi package in passive mode
+MsiInstall;installer.msi;Arguments # Installs an msi package
 ```
 
 ## NOTES
