@@ -353,6 +353,7 @@ Private Sub WBS_Uninstall(arrParams, boolWithChildren)
             If InStr(1, strUninstallString, "MsiExec", vbTextCompare) = 1 Or InStr(1, strUninstallString, "msiexec", vbTextCompare) = 1 Then
                 WScript.Echo "   > Uninstalling in passive msiexec mode..."
                 objShell.Run strUninstallString & " /passive", 1, True
+                objShell.Run "msiexec.exe /x " & strSubKey & " /passive" ' Sometimes programs use the installer as the uninstaller
             Else
                 WScript.Echo "   > Uninstalling as regular executable..."
                 objShell.Run strUninstallString, 1, True

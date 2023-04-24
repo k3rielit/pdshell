@@ -1,8 +1,8 @@
 SetRootPath;D:\Repos\wintools\wbs\
 # CreateLink;.\test\test.lnk;C:\Windows\System32\notepad.exe
 # RunAndWait;.\test.lnk
+ProcessConfig;.\configs\config.install.txt
 
-AutoUninstall;C:\Program Files\IrfanView\i_view64.exe;C:\Program Files\IrfanView\iv_uninstall.exe;/silent
-
+SetRootPath;D:\Repos\wintools\wbs\
 ProcessConfig;.\configs\config.linktest.txt
 PressAnyKey;config.txt ended

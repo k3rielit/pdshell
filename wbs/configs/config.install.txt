@@ -1,46 +1,87 @@
 SetRootPath;\\
 
-# PYTHON, IDLE (TODO: IDLE icon, AutoInstall, AutoUninstall)
-# RunAndWait;.\installers\python-3.10.5-amd64.exe;/uninstall /quiet
-# RunAndWait;.\installers\python-3.10.5-amd64.exe;/quiet InstallAllUsers=1 PrependPath=1
-# CreateIcon;C:\Users\Public\Desktop\IDLE.lnk;C:\Program Files\Python310;
+# Uninstall;Ginop
+
+# RunAndWait;C:\Program Files\7-Zip\Uninstall.exe;/S
+# RunAndWait;C:\Program Files (x86)\7-Zip\Uninstall.exe;/S
+# RunAndWait;C:\Program Files\VideoLAN\VLC\uninstall.exe;/S
+# RunAndWait;C:\Program Files (x86)\VideoLAN\VLC\uninstall.exe;/S
+# RunAndWait;C:\Program Files\WinRAR\uninstall.exe;/S
+# RunAndWait;C:\Program Files (x86)\WinRAR\uninstall.exe;/S
+# RunAndWait;C:\Program Files\Audacity\unins000.exe;/VERYSILENT /NORESTART
+# RunAndWait;C:\Program Files (x86)\Audacity\unins000.exe;/VERYSILENT /NORESTART
+# RunAndWait;C:\Program Files\Foxit Software\Foxit PDF Reader\unins000.exe;/VERYSILENT /NORESTART
+# RunAndWait;C:\Program Files (x86)\Foxit Software\Foxit PDF Reader\unins000.exe;/VERYSILENT /NORESTART
+# RunAndWait;C:\Program Files\Foxit Software\Foxit Reader\unins000.exe;/VERYSILENT /NORESTART
+# RunAndWait;C:\Program Files (x86)\Foxit Software\Foxit Reader\unins000.exe;/VERYSILENT /NORESTART
+# RunAndWait;.\installers\uninstall_flash_player.exe;-uninstall
+# RunAndWait;C:\Program Files\totalcmd\tcuninst.exe;/7
+# RunAndWait;C:\Program Files (x86)\totalcmd\tcuninst.exe;/7
+# RunAndWait;C:\Windows\SysWOW64\OneDriveSetup.exe;/uninstall /allusers
+# RunAndWait;C:\Windows\System32\OneDriveSetup.exe;/uninstall /allusers
+# RunAndWait;C:\Program Files (x86)\Klavaro\unins000.exe
+# RunAndWait;C:\Program Files\Elantech\ETDUn_inst.exe
+# RunAndWait;C:\Program Files (x86)\Elantech\ETDUn_inst.exe
+# RunAndWait;C:\Program Files\Tablet\ISD\setup\Remove.exe;/u
+# RunAndWait;C:\Windows\System32\rundll32.exe;"C:\Program Files\Synaptics\SynTP\SynISDLL.dll",standAloneUninstall
+
+# VCREDIST
+# RunAndWait;.\installers\vcredist_2015_2022_x64.exe;/Q
+
+# PYTHON, IDLE (AutoInstall, AutoUninstall)
+# RunAndWait;.\installers\erettsegi2023maj\python-3.10.5-amd64.exe;/uninstall /quiet
+# RunAndWait;.\installers\erettsegi2023maj\python-3.10.5-amd64.exe;/quiet InstallAllUsers=1 PrependPath=1
+# CreateIcon;C:\Users\Public\Desktop\IDLE.lnk;C:\Program Files\Python310\pythonw.exe;"C:\Program Files\Python310\Lib\idlelib\idle.pyw"
 
 # PYCHARM (replace PATH)
 # RunAndWait;C:\Program Files (x86)\JetBrains\PyCharm Community Edition 2022.2\bin\Uninstall.exe;/S
-# RunAndWait;.\installers\pycharm-community-2022.2.exe;/S /CONFIG=PATH\installers\silent.config
+# RunAndWait;C:\Program Files\JetBrains\PyCharm Community Edition 2022.2\bin\Uninstall.exe;/S
+# RunAndWait;C:\Program Files (x86)\JetBrains\PyCharm Community Edition 2022.2.2\bin\Uninstall.exe;/S
+# RunAndWait;C:\Program Files\JetBrains\PyCharm Community Edition 2022.2.2\bin\Uninstall.exe;/S
+# RunAndWait;.\installers\erettsegi2023maj\pycharm-community-2022.2.exe;/S /CONFIG=PATH\installers\silent.config
 
-# GIMP (TODO: use AutoInstall instead)
-RunAndWait;C:\Program Files\GIMP 2\uninst\unins000.exe;/VERYSILENT
-RunAndWait;.\installers\gimp-2.10.32.exe;/VERYSILENT /NORESTART /ALLUSERS
-CreateIcon;C:\Users\Public\Desktop\Gimp.lnk;C:\Program Files\GIMP 2\bin\gimp-2.10.exe
+# GIMP
+# AutoUninstall;C:\Program Files\GIMP 2\bin\gimp-2.10.exe;C:\Program Files\GIMP 2\uninst\unins000.exe;/VERYSILENT
+# AutoInstall;C:\Program Files\GIMP 2\bin\gimp-2.10.exe;.\installers\erettsegi2023maj\gimp-2.10.32.exe;/VERYSILENT /NORESTART /ALLUSERS
+# CreateIcon;C:\Users\Public\Desktop\Gimp.lnk;C:\Program Files\GIMP 2\bin\gimp-2.10.exe
 
 # JAVA 8u341 (TODO: use AutoInstall instead)
-Uninstall;Java
-RunAndWait;.\installers\jdk-8u341-windows-x64.exe;/s
+# Uninstall;Java
+# RunAndWait;.\installers\erettsegi2023maj\jdk-8u341-windows-x64.exe;/s
 
 # IRFANVIEW 32bit
 # AutoUninstall;C:\Program Files (x86)\IrfanView\i_view32.exe;C:\Program Files (x86)\IrfanView\iv_uninstall.exe;/silent
-# AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\installers\iview462_32bit_setup.exe;/desktop=1 /thumbs=1 /silent /group=1 /allusers=1 /assoc=1
+# AutoInstall;C:\Program Files (x86)\IrfanView\i_view32.exe;.\installers\erettsegi2023maj\iview462_32bit_setup.exe;/desktop=1 /thumbs=1 /silent /group=1 /allusers=1 /assoc=1
 # CreateIcon;C:\Users\Public\Desktop\IrfanView 32bit.lnk;C:\Program Files (x86)\IrfanView\i_view32.exe
 
 # IRFANVIEW 64bit
 # AutoUninstall;C:\Program Files\IrfanView\i_view64.exe;C:\Program Files\IrfanView\iv_uninstall.exe;/silent
-# AutoInstall;C:\Program Files\IrfanView\i_view64.exe;.\installers\iview462_64bit_setup.exe;/desktop=1 /thumbs=1 /silent /group=1 /allusers=1 /assoc=1
+# AutoInstall;C:\Program Files\IrfanView\i_view64.exe;.\installers\erettsegi2023maj\iview460_x64.exe;/desktop=1 /thumbs=1 /silent /group=1 /allusers=1 /assoc=1
 # CreateIcon;C:\Users\Public\Desktop\IrfanView 64bit.lnk;C:\Program Files\IrfanView\i_view64.exe
-
+# RunAndWait;.\installers\erettsegi2023maj\irfanview_462_lang_hungarian.exe;/silent
 
 # SEAMONKEY (Installer creates public icon)
 # AutoUninstall;C:\Program Files\SeaMonkey\seamonkey.exe;C:\Program Files\SeaMonkey\uninstall\helper.exe;/S
-# AutoInstall;C:\Program Files\SeaMonkey\seamonkey.exe;.\installers\seamonkey-2.53.13.hu.win64.exe;/S
+# AutoInstall;C:\Program Files\SeaMonkey\seamonkey.exe;.\installers\erettsegi2023maj\seamonkey-2.53.13.hu.win64.exe;/S
 # CreateIcon;C:\Users\Public\Desktop\SeaMonkey.lnk;C:\Program Files\SeaMonkey\seamonkey.exe
 
 # INKSCAPE (TODO: uninstall) (MsiInstall creates public icon)
-Uninstall;Inkscape
-# MsiInstall;.\inkscape-1.2.1_2022-07-14.msi;ALLUSERS=1 /passive
+# Uninstall;Inkscape
+# MsiInstall;.\installers\erettsegi2023maj\inkscape-1.2.1_2022-07-14.msi;ALLUSERS=1 /passive
 # CreateIcon;C:\Users\Public\Desktop\Inkscape.lnk;C:\Program Files\Inkscape\bin\inkscape.exe
 
+# BLUEFISH
+# AutoUninstall;C:\Program Files (x86)\Bluefish\bluefish.exe;C:\Program Files (x86)\Bluefish\bluefish-uninst.exe;/S
+# AutoInstall;C:\Program Files (x86)\Bluefish\bluefish.exe;.\installers\erettsegi2023maj\Bluefish-2.2.12.exe;/S
+# CreateIcon;C:\Users\Public\Desktop\Bluefish.lnk;C:\Program Files (x86)\Bluefish\bluefish.exe
+
+# VS COMMUNITY 2019
+# RunAndWait;C:\Program Files (x86)\Microsoft Visual Studio\Installer\vs_installer.exe;/uninstall --passive
+# RunAndWait;.\installers\erettsegi2023maj\vs_community_2019.exe
+
 # VEYON (TODO: uninstall)
-# RunAndWait;.\installers\veyon.exe;/S /NoMaster
+# AutoUninstall;C:\Program Files\Veyon\veyon-service.exe;
+# AutoInstall;C:\Program Files\Veyon\veyon-service.exe;.\installers\veyon.exe;/S /NoMaster
  
 # install, activate Office2019 (TODO: uninstall, might have to use absolute path to xml)
 # Uninstall;Microsoft Office Professional Plus 2016
@@ -50,16 +91,9 @@ Uninstall;Inkscape
 # Activate Windows 10 Enterprise
 # RunAndWait;.\scripts\tisztaszoftver_w10enterprise.bat
 
-# VCREDIST
-# RunAndWait;.\installers\vcredist_2015_2022_x64.exe;/Q
-
 # KLAVARO (TODO: uninstall)
-AutoInstall;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\installers\Klavaro-2.00c-win.exe
+# AutoInstall;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe;.\installers\Klavaro-2.00c-win.msi
 # CreateIcon;C:\Users\Public\Desktop\Klavaro.lnk;C:\Program Files (x86)\Klavaro-2.00c\bin\klavaro.exe
 
-# VSCODE (TODO: uninstall)
-# AutoInstall;C:\Program Files\Microsoft VS Code\Code.exe;.\installers\VSCodeUserSetup-x64-1.76.0.exe
-# CreateIcon;C:\Users\Public\Desktop\VS Code.lnk;C:\Program Files\Microsoft VS Code\Code.exe
-
 # Final DelProf2
-# Run;.\programs\DelProf2.exe
+# Run;.\programs\DelProf2_1.6.0.exe;/u /d:7 /ed:admin
